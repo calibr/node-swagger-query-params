@@ -1,3 +1,7 @@
+# Install
+
+`npm i swagger-query-params`
+
 # Usage
 
 ```js
