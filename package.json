@@ -1,0 +1,24 @@
+{
+  "name": "swagger-query-params",
+  "version": "1.0.0",
+  "description": "Parse filter/order/limit attribute in swagger request",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/calibr/node-swagger-query-params.git"
+  },
+  "keywords": [
+    "swagger",
+    "node",
+    "parse"
+  ],
+  "author": "calibr <awcalibr@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/calibr/node-swagger-query-params/issues"
+  },
+  "homepage": "https://github.com/calibr/node-swagger-query-params"
+}
