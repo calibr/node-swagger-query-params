@@ -8,6 +8,7 @@ describe("Usage", function() {
       field2: "test"
     };
     var req = {
+      api: {},
       swagger: {
         params: {
           filter: {
@@ -18,12 +19,13 @@ describe("Usage", function() {
       }
     };
     middleware(req, null, function() {});
-    req.swagger.params.filter.value.should.eql(filter);
+    req.api.filter.should.eql(filter);
   });
 
   it("should parse order", function() {
     var order = [["field1", "asc"], ["field2", "desc"]];
     var req = {
+      api: {},
       swagger: {
         params: {
           order: {
@@ -34,15 +36,16 @@ describe("Usage", function() {
       }
     };
     middleware(req, null, function() {});
-    req.swagger.params.order.value.should.eql(order);
+    req.api.order.should.eql(order);
   });
 
-  it("should parse limit", function() {
+  it("should parse range", function() {
     var limit = {offset: 0, limit: 10};
     var req = {
+      api: {},
       swagger: {
         params: {
-          limit: {
+          range: {
             schema: {in: "query"},
             value: JSON.stringify(limit)
           }
@@ -50,12 +53,13 @@ describe("Usage", function() {
       }
     };
     middleware(req, null, function() {});
-    req.swagger.params.limit.value.should.eql(limit);
+    req.api.range.should.eql(limit);
   });
 
   it("short order should be expanded to full one", function() {
     var order = ["field1", "asc"];
     var req = {
+      api: {},
       swagger: {
         params: {
           order: {
@@ -66,6 +70,28 @@ describe("Usage", function() {
       }
     };
     middleware(req, null, function() {});
-    req.swagger.params.order.value.should.eql([["field1", "asc"]]);
+    req.api.order.should.eql([["field1", "asc"]]);
+  });
+
+  it("parsing error should be catched", function() {
+    var order = ["field1", "asc"];
+    var req = {
+      api: {},
+      swagger: {
+        params: {
+          order: {
+            schema: {in: "query"},
+            value: "{|something wild||xxx"
+          }
+        }
+      }
+    };
+    var err;
+    middleware(req, {
+      api: {
+        error: function(e) {err = e;}
+      }
+    }, function() {});
+    should.exists(err);
   });
 });
