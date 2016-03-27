@@ -73,6 +73,34 @@ describe("Usage", function() {
     req.api.order.should.eql([["field1", "asc"]]);
   });
 
+  it("passing malformed order should return an error", function() {
+    var malformedOrders = [
+      [[["field1", "asc"]]],
+      ["field"],
+      "field"
+    ];
+    malformedOrders.forEach(function(order) {
+      var req = {
+        api: {},
+        swagger: {
+          params: {
+            order: {
+              schema: {in: "query"},
+              value: JSON.stringify(order)
+            }
+          }
+        }
+      };
+      var err;
+      middleware(req, {
+        api: {
+          error: function(e) {err = e;}
+        }
+      }, function() {});
+      should.exists(err);
+    });
+  });
+
   it("parsing error should be catched", function() {
     var order = ["field1", "asc"];
     var req = {
