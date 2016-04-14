@@ -15,6 +15,9 @@
     "node",
     "parse"
   ],
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
+  },
   "author": "calibr <awcalibr@gmail.com>",
   "license": "ISC",
   "bugs": {
