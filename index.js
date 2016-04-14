@@ -23,7 +23,8 @@ module.exports = function(req, res, next) {
     }
     return next(err);
   }
-  paramsToParse.forEach(function(paramName) {
+  for(var i = 0; i != paramsToParse.length; i++) {
+    var paramName = paramsToParse[i];
     var p = req.swagger.params[paramName];
     if(p && p.schema.in === "query" && p.value) {
       var v;
@@ -49,6 +50,6 @@ module.exports = function(req, res, next) {
         req.swagger.params[paramName].value = v;
       }
     }
-  });
+  }
   next();
 };

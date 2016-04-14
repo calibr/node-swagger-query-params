@@ -119,7 +119,9 @@ describe("Usage", function() {
       api: {
         error: function(e) {err = e;}
       }
-    }, function() {});
+    }, function() {
+      throw new Error("next should not be called");
+    });
     should.exists(err);
   });
 });
