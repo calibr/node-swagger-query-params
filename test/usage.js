@@ -1,7 +1,29 @@
 var should = require("should");
-var middleware = require("../index");
+var middlewareFactory = require("../index");
+var sinon = require("sinon");
+
+var validateFilter = require("../lib/validators/filter");
+var validateOrder = require("../lib/validators/order");
+var validateRange = require("../lib/validators/range");
+
+var middleware = middlewareFactory({
+  validateOrder: {
+    allowedFields: ["field1", "field2"]
+  },
+  validateFilter: {
+    field1: {},
+    field2: {},
+  },
+  validateRange: {
+    maxLimit: 11
+  }
+});
 
 describe("Usage", function() {
+  var validateFilterSpy;
+  var validateOrderSpy;
+  var validateRangeSpy;
+
   it("should parse filter", function() {
     var filter = {
       field1: {gt: 2},
@@ -18,7 +40,9 @@ describe("Usage", function() {
         }
       }
     };
-    middleware(req, null, function() {});
+    middleware(req, null, function(err) {
+      should.not.exists(err);
+    });
     req.api.filter.should.eql(filter);
   });
 
@@ -35,7 +59,9 @@ describe("Usage", function() {
         }
       }
     };
-    middleware(req, null, function() {});
+    middleware(req, null, function(err) {
+      should.not.exists(err);
+    });
     req.api.order.should.eql(order);
   });
 
@@ -69,7 +95,9 @@ describe("Usage", function() {
         }
       }
     };
-    middleware(req, null, function() {});
+    middleware(req, null, function(err) {
+      should.not.exists(err);
+    });
     req.api.order.should.eql([["field1", "asc"]]);
   });
 
