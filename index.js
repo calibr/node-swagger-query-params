@@ -2,6 +2,8 @@ var validateFilter = require("./lib/validators/filter");
 var validateRange = require("./lib/validators/range");
 var validateOrder = require("./lib/validators/order");
 
+var JSONPath = require("jsonpath-plus");
+
 var Promise = require("bluebird");
 
 function isValidOrder(order) {
@@ -69,10 +71,29 @@ module.exports = function(options) {
             }
           });
         }
+      }).then(function() {
+        if(options.validateParams) {
+          // need to validate the swagger params
+          return Promise.each(Object.keys(options.validateParams), function(jsonPathOrig) {
+            var parts = jsonPathOrig.split(".");
+            parts.splice(1, 0, "value");
+            var jsonPath = "$." + parts.join(".");
+            var values = JSONPath({path: jsonPath, json: req.swagger.params});
+            if(values.length === 1) {
+              var value = values[0];
+              return options.validateParams[jsonPathOrig](value, req);
+            }
+            else {
+              throw new Error("Field validation is ambiguous, path: " + jsonPath);
+            }
+          });
+        }
       });
     })
     .then(function() {
-      next();
+      process.nextTick(function() {
+        next();
+      });
     })
     .catch(returnError)
   };

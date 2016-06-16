@@ -3,10 +3,98 @@ var validateRange = require("../lib/validators/range");
 var validateOrder = require("../lib/validators/order");
 var ValidationError = require("../lib/errors/validation");
 
+var middlewareFactory = require("../index");
+
 var Promise = require("bluebird");
 var should = require("should");
 
 describe("Validation", function() {
+  describe("Custom param validation", function() {
+    it("successful validation(nested param)", function() {
+      var called = false;
+      var request = {
+        swagger: {
+          params: {
+            field: {
+              value: {
+                subfield: "OK"
+              }
+            }
+          }
+        }
+      };
+      var middleware = middlewareFactory({
+        validateParams: {
+          "field.subfield": function(value, req) {
+            called = true;
+            req.should.equal(request);
+            value.should.equal("OK");
+            return Promise.resolve();
+          }
+        }
+      });
+      return middleware(request, null, function(err) {
+        should.not.exists(err);
+        called.should.equal(true);
+      });
+    });
+
+    it("successful validation(direct param)", function() {
+      var called = false;
+      var request = {
+        swagger: {
+          params: {
+            field: {
+              value: "OK"
+            }
+          }
+        }
+      };
+      var middleware = middlewareFactory({
+        validateParams: {
+          field: function(value, req) {
+            called = true;
+            req.should.equal(request);
+            value.should.equal("OK");
+            return Promise.resolve();
+          }
+        }
+      });
+      return middleware(request, null, function(err) {
+        should.not.exists(err);
+        called.should.equal(true);
+      });
+    });
+
+    it("failed validation", function() {
+      var called = false;
+      var request = {
+        swagger: {
+          params: {
+            field: {
+              value: "OK"
+            }
+          }
+        }
+      };
+      var middleware = middlewareFactory({
+        validateParams: {
+          field: function(value, req) {
+            called = true;
+            req.should.equal(request);
+            value.should.equal("OK");
+            return Promise.reject(new Error("myfail"));
+          }
+        }
+      });
+      return middleware(request, null, function(err) {
+        should.exists(err);
+        err.message.should.equal("myfail");
+        called.should.equal(true);
+      });
+    });
+  });
+
   describe("Validate order", function() {
     it("should be successfully validated", function() {
       validateOrder([["amount", "asc"], ["user_id", "desc"]], {
