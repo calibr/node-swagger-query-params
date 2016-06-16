@@ -1,6 +1,8 @@
 var should = require("should");
 var middlewareFactory = require("../index");
 var sinon = require("sinon");
+var Promise = require("bluebird");
+
 
 var validateFilter = require("../lib/validators/filter");
 var validateOrder = require("../lib/validators/order");
@@ -40,10 +42,10 @@ describe("Usage", function() {
         }
       }
     };
-    middleware(req, null, function(err) {
+    return middleware(req, null, function(err) {
       should.not.exists(err);
+      req.api.filter.should.eql(filter);
     });
-    req.api.filter.should.eql(filter);
   });
 
   it("should parse order", function() {
@@ -59,10 +61,10 @@ describe("Usage", function() {
         }
       }
     };
-    middleware(req, null, function(err) {
+    return middleware(req, null, function(err) {
       should.not.exists(err);
+      req.api.order.should.eql(order);
     });
-    req.api.order.should.eql(order);
   });
 
   it("should parse range", function() {
@@ -78,8 +80,9 @@ describe("Usage", function() {
         }
       }
     };
-    middleware(req, null, function() {});
-    req.api.range.should.eql(limit);
+    return middleware(req, null, function() {
+      req.api.range.should.eql(limit);
+    });
   });
 
   it("short order should be expanded to full one", function() {
@@ -95,10 +98,10 @@ describe("Usage", function() {
         }
       }
     };
-    middleware(req, null, function(err) {
+    return middleware(req, null, function(err) {
       should.not.exists(err);
+      req.api.order.should.eql([["field1", "asc"]]);
     });
-    req.api.order.should.eql([["field1", "asc"]]);
   });
 
   it("passing malformed order should return an error", function() {
@@ -107,7 +110,7 @@ describe("Usage", function() {
       ["field"],
       "field"
     ];
-    malformedOrders.forEach(function(order) {
+    return Promise.each(malformedOrders, function(order) {
       var req = {
         api: {},
         swagger: {
@@ -120,12 +123,13 @@ describe("Usage", function() {
         }
       };
       var err;
-      middleware(req, {
+      return middleware(req, {
         api: {
           error: function(e) {err = e;}
         }
-      }, function() {});
-      should.exists(err);
+      }, function() {}).then(function() {
+        should.exists(err);
+      });
     });
   });
 
@@ -143,13 +147,14 @@ describe("Usage", function() {
       }
     };
     var err;
-    middleware(req, {
+    return middleware(req, {
       api: {
         error: function(e) {err = e;}
       }
     }, function() {
       throw new Error("next should not be called");
+    }).then(function() {
+      should.exists(err);
     });
-    should.exists(err);
   });
 });

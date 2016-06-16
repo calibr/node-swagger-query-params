@@ -1,6 +1,6 @@
 {
   "name": "swagger-query-params",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Parse filter/order/limit attribute in swagger request",
   "main": "index.js",
   "scripts": {
@@ -29,6 +29,7 @@
     "should": "^7.1.0"
   },
   "dependencies": {
+    "bluebird": "^3.4.0",
     "sinon": "^1.17.4"
   }
 }
