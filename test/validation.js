@@ -93,6 +93,30 @@ describe("Validation", function() {
         called.should.equal(true);
       });
     });
+
+    it("if param is not set should ignore", function() {
+      var called = false;
+      var request = {
+        swagger: {
+          params: {
+            anotherField: {
+              value: "OK"
+            }
+          }
+        }
+      };
+      var middleware = middlewareFactory({
+        validateParams: {
+          field: function(value, req) {
+            called = true;
+          }
+        }
+      });
+      return middleware(request, null, function(err) {
+        should.not.exists(err);
+        called.should.equal(false);
+      });
+    });
   });
 
   describe("Validate order", function() {

@@ -83,8 +83,10 @@ module.exports = function(options) {
               var value = values[0];
               return options.validateParams[jsonPathOrig](value, req);
             }
-            else {
-              throw new Error("Field validation is ambiguous, path: " + jsonPath);
+            else if(values.length > 1) {
+              throw new Error(
+                "Field validation is ambiguous, path: " + jsonPath + ", values: " + values.join(",")
+              );
             }
           });
         }
