@@ -81,7 +81,9 @@ module.exports = function(options) {
             var values = JSONPath({path: jsonPath, json: req.swagger.params});
             if(values.length === 1) {
               var value = values[0];
-              return options.validateParams[jsonPathOrig](value, req);
+              if(typeof value !== "undefined") {
+                return options.validateParams[jsonPathOrig](value, req);
+              }
             }
             else if(values.length > 1) {
               throw new Error(

@@ -117,6 +117,31 @@ describe("Validation", function() {
         called.should.equal(false);
       });
     });
+
+    it("if param is undefined should ignore", function() {
+      var called = false;
+      var request = {
+        swagger: {
+          params: {
+            field: {
+              value: undefined
+            }
+          }
+        }
+      };
+      var middleware = middlewareFactory({
+        validateParams: {
+          field: function(value, req) {
+            called = true;
+            return Promise.reject(new Error("myfail"));
+          }
+        }
+      });
+      return middleware(request, null, function(err) {
+        should.not.exists(err);
+        called.should.equal(false);
+      });
+    });
   });
 
   describe("Validate order", function() {
