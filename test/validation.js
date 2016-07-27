@@ -216,6 +216,31 @@ describe("Validation", function() {
       });
     });
 
+    it("should be successfully validated with dollar prefix in comparator", function() {
+      return validateFilter({
+        payout: {$gt: 20},
+        country: {
+          $in: ["US", "UK"]
+        },
+        state: {
+          $eq: "received"
+        }
+      }, {
+        payout: {
+          valueType: "number",
+          allowedComparators: ["gt"]
+        },
+        country: {
+          valueType: "string",
+          allowedComparators: ["in"]
+        },
+        state: {
+          valueType: "string",
+          allowedComparators: ["eq"]
+        }
+      });
+    });
+
     it("should return comparator error", function() {
       return validateFilter({
         payout: {gt: 20},
