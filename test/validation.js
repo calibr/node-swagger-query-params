@@ -218,7 +218,10 @@ describe("Validation", function() {
 
     it("should be successfully validated with dollar prefix in comparator", function() {
       return validateFilter({
-        payout: {$gt: 20},
+        payout: {
+          $gt: 20,
+          $lt: 30
+        },
         country: {
           $in: ["US", "UK"]
         },
@@ -228,7 +231,7 @@ describe("Validation", function() {
       }, {
         payout: {
           valueType: "number",
-          allowedComparators: ["gt"]
+          allowedComparators: ["gt", "lt"]
         },
         country: {
           valueType: "string",
@@ -243,13 +246,16 @@ describe("Validation", function() {
 
     it("should return comparator error", function() {
       return validateFilter({
-        payout: {gt: 20},
+        payout: {
+          lt: 30,
+          gt: 20
+        },
         country: ["US", "UK"],
         state: "received"
       }, {
         payout: {
           valueType: "number",
-          allowedComparators: ["eq"]
+          allowedComparators: ["eq", "lt"]
         },
         country: {
           valueType: "string",
@@ -344,7 +350,7 @@ describe("Validation", function() {
           func: function(value, req) {
             funcCalled = true;
             req.should.equal(request);
-            value.should.equal("received");
+            value.should.eql(["received"]);
             return Promise.resolve();
           }
         }
@@ -373,7 +379,7 @@ describe("Validation", function() {
           allowedComparators: ["eq"],
           func: function(value, req) {
             req.should.equal(request);
-            value.should.equal("received");
+            value.should.eql(["received"]);
             return Promise.reject(new Error("myerror"));
           }
         }
