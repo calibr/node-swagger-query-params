@@ -1,6 +1,7 @@
 var validateFilter = require("./lib/validators/filter");
 var validateRange = require("./lib/validators/range");
 var validateOrder = require("./lib/validators/order");
+var ValidationError = require('./lib/errors/validation')
 
 var JSONPath = require("jsonpath-plus");
 
@@ -102,3 +103,5 @@ module.exports = function(options) {
     .catch(returnError)
   };
 };
+
+module.exports.ValidationError = ValidationError
