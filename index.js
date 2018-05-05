@@ -45,8 +45,13 @@ module.exports = function(options) {
         if(p && p.schema.in === "query" && p.value) {
           var v = JSON.parse(p.value);
           return Promise.try(function() {
-            if(paramName === "filter" && options.validateFilter) {
-              return validateFilter.call(validatorsContext, v, options.validateFilter);
+            if(paramName === "filter") {
+              if(typeof v !== "object" || Array.isArray(v)) {
+                throw new ValidationError("filter", "filter must be an object and not an array")
+              }
+              if(options.validateFilter) {
+                return validateFilter.call(validatorsContext, v, options.validateFilter);
+              }
             }
             else if(paramName === "range" && options.validateRange) {
               return validateRange.call(validatorsContext, v, options.validateRange);
