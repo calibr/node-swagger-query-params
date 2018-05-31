@@ -389,5 +389,36 @@ describe("Validation", function() {
         err.message.should.equal("myerror");
       });
     });
+
+    it("should successfully validate with in comparator", function() {
+      var request = {};
+      var funcCalled = false;
+      return validateFilter.bind({req: request})({
+        payout: {gt: 20},
+        country: ["US", "UK"],
+        state: "received"
+      }, {
+        payout: {
+          valueType: "number",
+          allowedComparators: ["gt"]
+        },
+        country: {
+          valueType: "string",
+          allowedComparators: ["in"],
+          func: function(value, req) {
+            funcCalled = true;
+            req.should.equal(request);
+            value.should.eql(["US", "UK"]);
+            return Promise.resolve();
+          }
+        },
+        state: {
+          valueType: "string",
+          allowedComparators: ["eq"]
+        }
+      }).then(function() {
+        funcCalled.should.equal(true);
+      });
+    });
   });
 });
