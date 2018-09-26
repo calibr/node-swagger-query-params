@@ -325,6 +325,32 @@ describe("Validation", function() {
         err.extra.reason.should.equal("unexpectedField");
       });
     });
+
+    it("should return required error", function() {
+      return validateFilter({
+        country: ["US", "UK"],
+        state: "received"
+      }, {
+        payout: {
+          valueType: "number",
+          allowedComparators: ["gt"],
+          required: true
+        },
+        country: {
+          valueType: "string",
+          allowedComparators: ["in"]
+        },
+        state: {
+          valueType: "string",
+          allowedComparators: ["eq"]
+        }
+      }).then(function() {
+        throw "failed";
+      }).catch(function(err) {
+        err.should.be.an.instanceof(ValidationError);
+        err.extra.reason.should.equal("required");
+      });
+    });
   });
 
   describe("Validate filter with custom function", function() {

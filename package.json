@@ -1,6 +1,6 @@
 {
   "name": "swagger-query-params",
-  "version": "3.0.3",
+  "version": "3.1.0",
   "description": "Parse filter/order/limit attribute in swagger request",
   "main": "index.js",
   "scripts": {
