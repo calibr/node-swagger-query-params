@@ -7,6 +7,7 @@ interface ValidateParamsRule {
 }
 
 interface ValidateFilterFieldRule {
+  required?: boolean
   allowedComparators?: string[]
   valueType?: string
   func?: (value: any, req: any) => any
