@@ -27,6 +27,15 @@ function isValidOrder(order) {
 
 module.exports = function(options) {
   options = options || {};
+  let hasRequiredFieldsInFilter = false
+  if(options.validateFilter) {
+    for(let k in options.validateFilter) {
+      if(options.validateFilter[k]) {
+        hasRequiredFieldsInFilter = true
+        break
+      }
+    }
+  }
   return function(req, res, next) {
     var validatorsContext = {
       req: req,
@@ -38,6 +47,15 @@ module.exports = function(options) {
         return res.api.error(err);
       }
       return next(err);
+    }
+    if(hasRequiredFieldsInFilter && (!req.swagger.params.filter || !req.swagger.params.filter.value)) {
+      // need to add an empty object filter, because there are some required fields in the filter rule
+      req.swagger.params.filter = {
+        value: '{}',
+        schema: {
+          in: 'query'
+        }
+      }
     }
     return Promise.try(function() {
       return Promise.each(paramsToParse, function(paramName) {

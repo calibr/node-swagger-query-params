@@ -48,6 +48,27 @@ describe("Usage", function() {
     });
   });
 
+  it("should return error if fielter is not specified, but some fields are required in rule", function() {
+    let middleware = middlewareFactory({
+      validateFilter: {
+        field1: {
+          required: true
+        }
+      }
+    });
+    var req = {
+      api: {},
+      swagger: {
+        params: {
+        }
+      }
+    };
+    return middleware(req, null, function(err) {
+      should.exists(err);
+      err.extra.reason.should.equal('required')
+    });
+  });
+
   it("should parse order", function() {
     var order = [["field1", "asc"], ["field2", "desc"]];
     var req = {

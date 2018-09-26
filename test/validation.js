@@ -351,6 +351,30 @@ describe("Validation", function() {
         err.extra.reason.should.equal("required");
       });
     });
+
+    it("should return required error if filter is not specified", function() {
+      return validateFilter({
+      }, {
+        payout: {
+          valueType: "number",
+          allowedComparators: ["gt"],
+          required: true
+        },
+        country: {
+          valueType: "string",
+          allowedComparators: ["in"]
+        },
+        state: {
+          valueType: "string",
+          allowedComparators: ["eq"]
+        }
+      }).then(function() {
+        throw "failed";
+      }).catch(function(err) {
+        err.should.be.an.instanceof(ValidationError);
+        err.extra.reason.should.equal("required");
+      });
+    });
   });
 
   describe("Validate filter with custom function", function() {
