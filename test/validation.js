@@ -375,6 +375,44 @@ describe("Validation", function() {
         err.extra.reason.should.equal("required");
       });
     });
+
+    it("should validate null field", function() {
+      return validateFilter({
+        payout: null
+      }, {
+        payout: {
+          valueType: ["number", "null"],
+          allowedComparators: ["eq"]
+        }
+      });
+    });
+
+    it("should validate number field with allowed null", function() {
+      return validateFilter({
+        payout: 123
+      }, {
+        payout: {
+          valueType: ["number", "null"],
+          allowedComparators: ["eq"]
+        }
+      });
+    });
+
+    it("should not validate number field with allowed null", function() {
+      return validateFilter({
+        payout: "test"
+      }, {
+        payout: {
+          valueType: ["number", "null"],
+          allowedComparators: ["eq"]
+        }
+      }).then(function() {
+        throw "failed"
+      }).catch(function(err) {
+        err.should.be.an.instanceof(ValidationError);
+        err.extra.reason.should.equal("valueType");
+      })
+    });
   });
 
   describe("Validate filter with custom function", function() {
